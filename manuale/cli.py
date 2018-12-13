@@ -15,6 +15,7 @@ from .info import info
 from .register import register
 from .revoke import revoke
 from .errors import ManualeError
+from . import dns
 import manuale
 
 logger = logging.getLogger(__name__)
@@ -102,7 +103,15 @@ def _register(args):
 
 def _authorize(args):
     account = load_account(args.account)
-    authorize(args.server, account, args.domain, args.method)
+
+    if args.dns_provider == 'route53':
+        dns_provider = dns.Route53(hosted_zone_id=args.route53_hosted_zone_id)
+    elif args.dns_provider == 'azure':
+        dns_provider = dns.Azure()
+    else:
+        dns_provider = None
+
+    authorize(args.server, account, args.domain, args.method, dns_provider)
 
 def _issue(args):
     account = load_account(args.account)
@@ -114,7 +123,7 @@ def _issue(args):
         key_file=args.key_file,
         csr_file=args.csr_file,
         output_path=args.output,
-        must_staple=args.ocsp_must_staple,
+        must_staple=args.ocsp_must_staple
     )
 
 def _revoke(args):
@@ -183,6 +192,13 @@ def main():
                            help="Authorization method",
                            choices=('dns', 'http'),
                            default='dns')
+    authorize.add_argument('--dns-provider',
+                           help="The provider used to create challenge record",
+                           choices=('route53', 'azure', 'none'),
+                           default='none')
+    authorize.add_argument('--route53-hosted-zone-id', type=str,
+                           help="Route53 Hosted Zone ID for domain",
+                           required='route53' in sys.argv)
     authorize.set_defaults(func=_authorize)
 
     # Certificate issuance

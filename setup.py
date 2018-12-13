@@ -16,7 +16,7 @@ except:
 
 setup(
     name='manuale',
-    version='1.1.0',
+    version='1.2.0',
 
     license='MIT',
     description="A fully manual Let's Encrypt/ACME client",
@@ -41,6 +41,8 @@ setup(
     install_requires=[
         'cryptography >= 2.1',
         'requests',
+	'dnspython',
+	'boto3 >= 1.9'
     ],
 
     entry_points={

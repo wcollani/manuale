@@ -46,7 +46,7 @@ def retrieve_verification(acme, domain, auth, method):
             return False
 
 
-def authorize(server, account, domains, method):
+def authorize(server, account, domains, method, dns_provider):
     method = method + '-01'
     acme = Acme(server, account)
     thumbprint = generate_jwk_thumbprint(account.key)
@@ -104,9 +104,16 @@ def authorize(server, account, domains, method):
             logger.info("")
             logger.info("The necessary files have been written to the current directory.")
 
-        # Wait for the user to complete the challenges
-        logger.info("")
-        input("Press Enter to continue.")
+        if dns_provider:
+            logger.info("")
+            logger.info("Using DNS provider {} to complete challenge.".format(dns_provider.provider))
+            for domain, auth in authz.items():
+                dns_provider.create_dns_record(domain=domain, txt_record='"' + auth['txt_record'] + '"')
+                dns_provider.validate_dns_record(domain=domain, txt_record='"' + auth['txt_record'] + '"')
+        else:
+            # Wait for the user to manually complete the challenges
+            logger.info("")
+            input("Press Enter to continue.")
 
         # Validate challenges
         done, failed = set(), set()
@@ -118,6 +125,12 @@ def authorize(server, account, domains, method):
                 done.add(domain)
             else:
                 failed.add(domain)
+
+        # Clean up DNS records if created
+        if dns_provider:
+            logger.info("Removing challenge DNS record from {}.".format(dns_provider.provider))
+            for domain, auth in authz.items():
+                dns_provider.delete_dns_record(domain=domain, txt_record='"' + auth['txt_record'] + '"')
 
         # Print results
         logger.info("")
