@@ -99,7 +99,7 @@ Once that's done, you'll have your account saved in `account.json` in the curren
 
 `manuale` expects the account file to be in your working directory by default, so you'll probably want to make a specific directory to do all your certificate stuff in. Likewise, created certificates get saved in the current path by default.
 
-Next up, verify the domains you want a certificate for with `manuale authorize [domain]`. This will show you the DNS records you need to create and wait for you to do it. For example, you might do it for `example.com` and `www.example.com`.
+Next up, verify the domains you want a certificate for with `manuale authorize [domain]`. This will show you the DNS records you need to create and wait for you to do it. For example, you might do it for `example.com` and `www.example.com`. Optionally, you can use one of the supported DNS providers to automatically create the challenger records. `--dns-provider {route53,azure,none}`
 
 Once that's done, you can finally get down to business. Run `manuale issue example.com www.example.com` to get your certificate. It'll save the key, certificate and certificate with intermediate to the working directory.
 
