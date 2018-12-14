@@ -107,7 +107,7 @@ def _authorize(args):
     if args.dns_provider == 'route53':
         dns_provider = dns.Route53(hosted_zone_id=args.route53_hosted_zone_id)
     elif args.dns_provider == 'azure':
-        dns_provider = dns.Azure()
+        dns_provider = dns.Azure(resource_group=args.azure_resource_group)
     else:
         dns_provider = None
 
@@ -199,6 +199,9 @@ def main():
     authorize.add_argument('--route53-hosted-zone-id', type=str,
                            help="Route53 Hosted Zone ID for domain",
                            required='route53' in sys.argv)
+    authorize.add_argument('--azure-resource-group', type=str,
+                           help="Azure resource group for domain",
+                           required='azure' in sys.argv)
     authorize.set_defaults(func=_authorize)
 
     # Certificate issuance
@@ -274,3 +277,4 @@ def main():
         logger.error("Oops! An unhandled error occurred. Please file a bug.")
         logger.exception(e)
         sys.exit(3)
+

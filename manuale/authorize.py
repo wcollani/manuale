@@ -108,8 +108,10 @@ def authorize(server, account, domains, method, dns_provider):
             logger.info("")
             logger.info("Using DNS provider {} to complete challenge.".format(dns_provider.provider))
             for domain, auth in authz.items():
-                dns_provider.create_dns_record(domain=domain, txt_record='"' + auth['txt_record'] + '"')
-                dns_provider.validate_dns_record(domain=domain, txt_record='"' + auth['txt_record'] + '"')
+                dns_provider.create_dns_record(domain=domain, txt_record=auth['txt_record'])
+                if not dns_provider.validate_dns_record(domain=domain, txt_record=auth['txt_record']):
+                    logger.error("Unable to validate challenge record")
+                    exit(1)
         else:
             # Wait for the user to manually complete the challenges
             logger.info("")
@@ -130,7 +132,7 @@ def authorize(server, account, domains, method, dns_provider):
         if dns_provider:
             logger.info("Removing challenge DNS record from {}.".format(dns_provider.provider))
             for domain, auth in authz.items():
-                dns_provider.delete_dns_record(domain=domain, txt_record='"' + auth['txt_record'] + '"')
+                dns_provider.delete_dns_record(domain=domain, txt_record=auth['txt_record'])
 
         # Print results
         logger.info("")

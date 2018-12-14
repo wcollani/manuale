@@ -42,7 +42,10 @@ setup(
         'cryptography >= 2.1',
         'requests',
 	'dnspython',
-	'boto3 >= 1.9'
+	'boto3 >= 1.9',
+	'azure',
+	'azure-common',
+	'azure-mgmt-dns'
     ],
 
     entry_points={
