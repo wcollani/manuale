@@ -123,7 +123,7 @@ class Azure(DnsProvider):
         self.azure_client.record_sets.create_or_update(
             resource_group_name=self.resource_group,
             zone_name=self.rg_domain,
-            relative_record_set_name='_acme-challenge' + "." + domain.strip(self.rg_domain),
+            relative_record_set_name='_acme-challenge' + "." + domain.rstrip(self.rg_domain),
             record_type='TXT',
             parameters={
                 'ttl': self.ttl,
@@ -146,5 +146,5 @@ class Azure(DnsProvider):
         self.azure_client.record_sets.delete(
             resource_group_name=self.resource_group,
             zone_name=self.rg_domain,
-            relative_record_set_name='_acme-challenge' + "." + domain.strip(self.rg_domain),
+            relative_record_set_name='_acme-challenge' + "." + domain.rstrip(self.rg_domain),
             record_type='TXT')
